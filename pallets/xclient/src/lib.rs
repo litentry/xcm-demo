@@ -27,10 +27,8 @@ pub mod pallet {
 		}
 	}
 
-	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
 		/// The XCM sender module.
@@ -53,8 +51,6 @@ pub mod pallet {
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
-	// Pallets use events to inform users when important changes are made.
-	// https://substrate.dev/docs/en/knowledgebase/runtime/events
 	#[pallet::event]
 	#[pallet::metadata(T::AccountId = "AccountId")]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -62,7 +58,6 @@ pub mod pallet {
 		Xregister(T::AccountId, Vec<u8>),
 	}
 
-	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
 		/// Error to send xcm to Xregister server
@@ -72,9 +67,6 @@ pub mod pallet {
 	#[pallet::hooks]
 	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 
@@ -100,6 +92,7 @@ pub mod pallet {
 					Junction::Parachain(T::XregisterServerParachainId::get().into())).into(), 
 					message) {
 				Ok(()) => {
+					// emit the event if send successfully
 					Self::deposit_event(Event::Xregister(who, name));
 					Ok(().into())
 				},
